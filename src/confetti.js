@@ -7,9 +7,10 @@ const CONFIGS = {
     colors: ['#928AFF', '#5B43F2', '#B8B8FF', '#7418C1', '#CFCFFF', '#ffffff', '#E6E6FF', '#7E70FF'],
   },
   leadership: {
-    count: 80,
-    type: 'sparkle',
-    colors: ['#FF69B4', '#EA04DF', '#928AFF', '#5B43F2', '#69E9FF', '#FFBCC8', '#C08AEE', '#F457FD', '#D9B8F7'],
+    count: 18,
+    type: 'text',
+    messages: ['you go girl', 'woo, eleanor', 'hell yeah', 'crushed it, babe', 'you did done did it', 'boss lady fo realz'],
+    colors: ['#FF69B4', '#EA04DF', '#928AFF', '#F457FD', '#FFBCC8', '#C08AEE'],
   },
   life: {
     count: 55,
@@ -96,11 +97,19 @@ export function launchConfetti(colId) {
 
     if (cfg.type === 'sparkle') {
       const color = cfg.colors[Math.floor(Math.random() * cfg.colors.length)];
-      const size  = Math.round(10 + Math.random() * 16);   // bigger so shape reads clearly
+      const size  = Math.round(10 + Math.random() * 16);
 
       el = document.createElement('div');
       el.style.cssText = `position:absolute;left:${x}%;top:-${size+4}px;width:${size}px;height:${size}px;`;
       el.appendChild(makeSparkleSVG(size, color));
+    } else if (cfg.type === 'text') {
+      const msg   = cfg.messages[Math.floor(Math.random() * cfg.messages.length)];
+      const color = cfg.colors[Math.floor(Math.random() * cfg.colors.length)];
+      const size  = Math.round(13 + Math.random() * 8);
+
+      el = document.createElement('div');
+      el.textContent = msg;
+      el.style.cssText = `position:absolute;left:${x}%;top:-40px;font-size:${size}px;font-weight:700;font-family:sans-serif;white-space:nowrap;user-select:none;color:${color};text-shadow:0 1px 6px rgba(0,0,0,0.35);`;
     } else {
       const emoji = cfg.emojis[Math.floor(Math.random() * cfg.emojis.length)];
       const size  = Math.round(22 + Math.random() * 20);
