@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { COLUMNS, SEED_TASKS, makeid, parseNL } from './data.js';
 import Column from './components/Column.jsx';
 import AIQuickAdd from './components/AIQuickAdd.jsx';
-import TweaksPanel from './components/TweaksPanel.jsx';
+import Scratchpad from './components/Scratchpad.jsx';
 import NewTaskModal from './components/NewTaskModal.jsx';
 import { Search, Sun, Moon, Plus, Filter } from './icons.jsx';
 import { launchConfetti } from './confetti.js';
@@ -301,7 +301,7 @@ export default function App() {
         </div>
       </div>
 
-      <TweaksPanel tweaks={tweaks} setTweak={setTweak} />
+      <Scratchpad />
 
       {modal && (
         <NewTaskModal

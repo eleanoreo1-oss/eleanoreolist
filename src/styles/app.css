@@ -494,60 +494,111 @@ body {
 [data-theme="light"] .foot kbd { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.08); }
 
 /* Tweaks panel */
-.tweaks-panel {
+/* ============================================================
+   Scratchpad
+   ============================================================ */
+.scratchpad-fab {
   position: fixed; bottom: 16px; right: 16px; z-index: 9999;
-  width: 260px; border-radius: 16px;
-  background: rgba(20,16,40,0.88);
+  width: 44px; height: 44px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: rgba(20,16,40,0.80);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.40);
+  cursor: pointer; padding: 0;
+}
+.scratchpad-fab-emoji { font-size: 20px; line-height: 1; }
+.scratchpad-fab-badge {
+  position: absolute; top: -5px; right: -5px;
+  min-width: 16px; height: 16px; border-radius: 999px;
+  background: #5B43F2; color: #fff;
+  font: 700 9px/16px var(--font-mono);
+  text-align: center; padding: 0 3px;
+  border: 1.5px solid rgba(20,16,40,0.9);
+}
+.scratchpad-panel {
+  position: fixed; bottom: 16px; right: 16px; z-index: 9999;
+  width: 280px; border-radius: 16px;
+  background: rgba(20,16,40,0.92);
   backdrop-filter: blur(30px) saturate(160%);
   -webkit-backdrop-filter: blur(30px) saturate(160%);
   border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.40);
-  font-size: 12px; color: rgba(255,255,255,0.85);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  font-size: 13px; color: rgba(255,255,255,0.88);
+  display: flex; flex-direction: column;
   overflow: hidden;
 }
-[data-theme="light"] .tweaks-panel {
-  background: rgba(255,255,255,0.88);
+[data-theme="light"] .scratchpad-panel {
+  background: rgba(255,255,255,0.92);
   border-color: rgba(0,0,0,0.08);
   color: #1a1a2e;
   box-shadow: 0 12px 40px rgba(0,0,0,0.15);
 }
-.tweaks-header {
+.scratchpad-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.08);
-  cursor: move; user-select: none;
 }
-[data-theme="light"] .tweaks-header { border-bottom-color: rgba(0,0,0,0.06); }
-.tweaks-header span { font-weight: 600; font-size: 12px; letter-spacing: 0.02em; }
-.tweaks-close {
+[data-theme="light"] .scratchpad-header { border-bottom-color: rgba(0,0,0,0.06); }
+.scratchpad-title { font-weight: 600; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; opacity: 0.7; }
+.scratchpad-close {
   width: 20px; height: 20px; border-radius: 6px;
   display: grid; place-items: center;
   background: transparent; border: 0; color: inherit;
-  cursor: pointer; opacity: 0.5; font-size: 14px; padding: 0;
+  cursor: pointer; opacity: 0.5; font-size: 16px; padding: 0;
 }
-.tweaks-close:hover { opacity: 1; background: rgba(255,255,255,0.08); }
-.tweaks-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 14px; }
-.tweak-section { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.45; margin-bottom: -6px; }
-.tweak-row { display: flex; flex-direction: column; gap: 6px; }
-.tweak-label { font-size: 11px; font-weight: 500; opacity: 0.7; }
-.tweak-seg {
-  display: flex; gap: 4px;
-  background: rgba(255,255,255,0.06); border-radius: 8px;
-  padding: 3px;
+.scratchpad-close:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+.scratchpad-list {
+  list-style: none; margin: 0; padding: 10px 0;
+  max-height: 300px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.12) transparent;
 }
-[data-theme="light"] .tweak-seg { background: rgba(0,0,0,0.06); }
-.tweak-seg-btn {
-  flex: 1; height: 24px; border-radius: 6px;
-  border: 0; background: transparent;
-  color: inherit; font: 500 11px/1 var(--font-body);
-  cursor: pointer; opacity: 0.55;
-  transition: all var(--dur-micro) var(--ease-out);
+.scratchpad-list::-webkit-scrollbar { width: 4px; }
+.scratchpad-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+.scratchpad-empty {
+  padding: 16px 16px; opacity: 0.38; font-size: 12px; text-align: center; font-style: italic;
 }
-.tweak-seg-btn.active {
-  background: rgba(91,67,242,0.80);
-  color: #fff; opacity: 1;
-  box-shadow: 0 2px 8px rgba(91,67,242,0.45);
+.scratchpad-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 7px 14px; transition: background var(--dur-micro);
 }
-[data-theme="light"] .tweak-seg-btn.active { background: #5B43F2; }
+.scratchpad-item:hover { background: rgba(255,255,255,0.04); }
+[data-theme="light"] .scratchpad-item:hover { background: rgba(0,0,0,0.03); }
+.scratchpad-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+  background: #928AFF;
+}
+.scratchpad-item-text { flex: 1; line-height: 1.45; font-size: 13px; word-break: break-word; }
+.scratchpad-remove {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px;
+  display: grid; place-items: center;
+  background: transparent; border: 0; color: inherit;
+  cursor: pointer; opacity: 0; font-size: 14px; padding: 0;
+  transition: opacity var(--dur-micro);
+}
+.scratchpad-item:hover .scratchpad-remove { opacity: 0.45; }
+.scratchpad-remove:hover { opacity: 1 !important; background: rgba(255,80,80,0.15); }
+.scratchpad-input-row {
+  display: flex; gap: 6px;
+  padding: 10px 12px; border-top: 1px solid rgba(255,255,255,0.07);
+}
+[data-theme="light"] .scratchpad-input-row { border-top-color: rgba(0,0,0,0.06); }
+.scratchpad-input {
+  flex: 1; height: 32px; border-radius: 8px; padding: 0 10px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+  color: inherit; font: 13px/1 var(--font-body); outline: none;
+}
+[data-theme="light"] .scratchpad-input { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.10); }
+.scratchpad-input:focus { border-color: rgba(146,138,255,0.55); background: rgba(146,138,255,0.08); }
+.scratchpad-input::placeholder { opacity: 0.38; }
+.scratchpad-add {
+  width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+  background: rgba(91,67,242,0.75); border: 0; color: #fff;
+  font-size: 20px; line-height: 1; cursor: pointer;
+  transition: background var(--dur-micro);
+}
+.scratchpad-add:hover:not(:disabled) { background: rgba(91,67,242,1); }
+.scratchpad-add:disabled { opacity: 0.3; cursor: default; }
 
 /* ============================================================
    New Task Modal
