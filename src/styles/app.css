@@ -461,7 +461,10 @@ body {
 .card-delete svg { width: 11px; height: 11px; display: block; color: #FFBCC8; }
 
 /* Completed column */
-.col.col-done { opacity: 0.78; }
+.col.col-done { opacity: 0.78; max-height: 520px; }
+.col.col-done .cards { overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent; }
+.col.col-done .cards::-webkit-scrollbar { width: 4px; }
+.col.col-done .cards::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
 .col.col-done .card { background: rgba(255,255,255,0.03); }
 [data-theme="light"] .col.col-done .card { background: rgba(0,0,0,0.025); }
 .col.col-done .card .card-text { text-decoration: line-through; opacity: 0.55; }
