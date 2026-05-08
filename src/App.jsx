@@ -7,6 +7,8 @@ import { Search, Sun, Moon, Plus, Filter } from './icons.jsx';
 
 const TWEAKS_DEFAULTS = { layout: 'kanban', density: 'comfy', glass: 'full' };
 
+const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
 export default function App() {
   const [theme, setTheme] = useState('dark');
   const [tasks, setTasks] = useState(SEED_TASKS);
@@ -196,7 +198,7 @@ export default function App() {
         {/* Page header */}
         <div className="page-head">
           <div>
-            <h1 className="page-title">Hi Eleanor, <em>it&apos;s Wednesday, May 7</em>.</h1>
+            <h1 className="page-title">Hi Eleanor, <em>it&apos;s {TODAY}</em>.</h1>
             <p className="page-sub">
               {stats.open} open · {stats.today} due today
               {stats.overdue > 0 ? ` · ${stats.overdue} overdue` : ''}
