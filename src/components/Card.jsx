@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Check, Star, StarFill, More, Clock } from '../icons.jsx';
+import { Check, Star, StarFill, X, Clock } from '../icons.jsx';
 import { dueLabel } from '../data.js';
 
 export default function Card({ task, accent, onToggle, onEdit, onDelete, onStar, onDragStart, onDragEnd, dragging }) {
@@ -58,8 +58,8 @@ export default function Card({ task, accent, onToggle, onEdit, onDelete, onStar,
           </span>
         </div>
       )}
-      <button className="card-menu" title="Delete" onClick={onDelete}>
-        <More />
+      <button className="card-delete" title="Delete task" onClick={onDelete}>
+        <X />
       </button>
     </div>
   );

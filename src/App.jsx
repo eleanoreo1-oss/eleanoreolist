@@ -3,6 +3,7 @@ import { COLUMNS, SEED_TASKS, makeid, parseNL } from './data.js';
 import Column from './components/Column.jsx';
 import AIQuickAdd from './components/AIQuickAdd.jsx';
 import TweaksPanel from './components/TweaksPanel.jsx';
+import NewTaskModal from './components/NewTaskModal.jsx';
 import { Search, Sun, Moon, Plus, Filter } from './icons.jsx';
 
 const TWEAKS_DEFAULTS = { layout: 'kanban', density: 'comfy', glass: 'full' };
@@ -16,6 +17,8 @@ export default function App() {
   const [dragId, setDragId] = useState(null);
   const [dragOver, setDragOver] = useState(null);
   const [tweaks, setTweakState] = useState(TWEAKS_DEFAULTS);
+  const [modal, setModal] = useState(null);       // null | { defaultCol }
+  const [confirmDelete, setConfirmDelete] = useState(null); // null | taskId
   const quickRef = useRef(null);
 
   // Apply theme to <html> element
@@ -67,11 +70,25 @@ export default function App() {
     };
   }, [tasks]);
 
-  function addTask({ text, due, col }) {
+  function addTask({ text, due, col, starred }) {
     if (!text) return;
+    // Convert ISO date (2026-05-10) to a human label
+    let dueLabel = due || null;
+    if (due) {
+      const d = new Date(due + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+      if (d.getTime() === today.getTime()) dueLabel = 'today';
+      else if (d.getTime() === tomorrow.getTime()) dueLabel = 'tomorrow';
+      else if (d < today) dueLabel = 'overdue';
+      else {
+        const days = Math.round((d - today) / 86400000);
+        dueLabel = '+' + days + 'd';
+      }
+    }
     setTasks(s => [...s, {
       id: makeid(), col: col || 'team', text,
-      due: due || null, done: false, starred: false,
+      due: dueLabel, done: false, starred: starred || false,
     }]);
   }
 
@@ -88,7 +105,11 @@ export default function App() {
   }
 
   function deleteTask(id) {
-    setTasks(s => s.filter(t => t.id !== id));
+    setConfirmDelete(id);
+  }
+  function confirmDeleteTask() {
+    setTasks(s => s.filter(t => t.id !== confirmDelete));
+    setConfirmDelete(null);
   }
 
   function toggleStar(id) {
@@ -96,8 +117,7 @@ export default function App() {
   }
 
   function onAddToCol(colId) {
-    const text = window.prompt(`New task for ${COLUMNS.find(c => c.id === colId)?.label}:`);
-    if (text?.trim()) addTask({ text: text.trim(), col: colId });
+    setModal({ defaultCol: colId });
   }
 
   // Drag & drop
@@ -189,7 +209,7 @@ export default function App() {
             >
               {theme === 'dark' ? <Sun /> : <Moon />}
             </button>
-            <button className="cta" onClick={() => quickRef.current?.focus()}>
+            <button className="cta" onClick={() => setModal({ defaultCol: 'team' })}>
               <Plus /> New task
             </button>
           </div>
@@ -260,6 +280,34 @@ export default function App() {
       </div>
 
       <TweaksPanel tweaks={tweaks} setTweak={setTweak} />
+
+      {modal && (
+        <NewTaskModal
+          defaultCol={modal.defaultCol}
+          onAdd={addTask}
+          onClose={() => setModal(null)}
+        />
+      )}
+
+      {confirmDelete && (
+        <div className="modal-scrim" onClick={() => setConfirmDelete(null)}>
+          <div className="modal confirm-modal" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">Delete task?</span>
+              <button className="modal-close" onClick={() => setConfirmDelete(null)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p className="confirm-text">
+                "{tasks.find(t => t.id === confirmDelete)?.text}"
+              </p>
+              <div className="modal-actions">
+                <button className="modal-cancel" onClick={() => setConfirmDelete(null)}>Keep it</button>
+                <button className="modal-submit modal-danger" onClick={confirmDeleteTask}>Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
