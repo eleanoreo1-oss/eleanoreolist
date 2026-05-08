@@ -13,7 +13,10 @@ const TODAY = new Date().toLocaleDateString('en-US', { weekday: 'long', month: '
 
 export default function App() {
   const [theme, setTheme] = useState('dark');
-  const [tasks, setTasks] = useState(SEED_TASKS);
+  const [tasks, setTasks] = useState(() => {
+    try { const s = localStorage.getItem('edl-tasks'); return s ? JSON.parse(s) : SEED_TASKS; }
+    catch { return SEED_TASKS; }
+  });
   const [query, setQuery] = useState('');
   const [dragId, setDragId] = useState(null);
   const [dragOver, setDragOver] = useState(null);
@@ -21,6 +24,11 @@ export default function App() {
   const [modal, setModal] = useState(null);       // null | { defaultCol }
   const [confirmDelete, setConfirmDelete] = useState(null); // null | taskId
   const quickRef = useRef(null);
+
+  // Persist tasks
+  useEffect(() => {
+    localStorage.setItem('edl-tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   // Apply theme to <html> element
   useEffect(() => {
