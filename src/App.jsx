@@ -5,6 +5,7 @@ import AIQuickAdd from './components/AIQuickAdd.jsx';
 import TweaksPanel from './components/TweaksPanel.jsx';
 import NewTaskModal from './components/NewTaskModal.jsx';
 import { Search, Sun, Moon, Plus, Filter } from './icons.jsx';
+import { launchConfetti } from './confetti.js';
 
 const TWEAKS_DEFAULTS = { layout: 'kanban', density: 'comfy', glass: 'full' };
 
@@ -93,6 +94,8 @@ export default function App() {
   }
 
   function toggleDone(id) {
+    const task = tasks.find(t => t.id === id);
+    if (task && task.col !== 'done') launchConfetti(task.col);
     setTasks(s => s.map(t => {
       if (t.id !== id) return t;
       if (t.col === 'done') return { ...t, col: t.prevCol || 'team', done: false, prevCol: undefined };
@@ -162,6 +165,7 @@ export default function App() {
           insertBefore = el.dataset.id;
         }
       });
+      if (colId === 'done' && moving.col !== 'done') launchConfetti(moving.col);
       const updated = {
         ...moving,
         col: colId,
