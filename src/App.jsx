@@ -104,6 +104,20 @@ export default function App() {
     setTasks(s => s.map(t => t.id === id ? { ...t, text } : t));
   }
 
+  function updateDue(id, isoDate) {
+    let due = null;
+    if (isoDate) {
+      const d = new Date(isoDate + 'T00:00:00');
+      const today = new Date(); today.setHours(0,0,0,0);
+      const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+      if (d.getTime() === today.getTime()) due = 'today';
+      else if (d.getTime() === tomorrow.getTime()) due = 'tomorrow';
+      else if (d < today) due = 'overdue';
+      else due = '+' + Math.round((d - today) / 86400000) + 'd';
+    }
+    setTasks(s => s.map(t => t.id === id ? { ...t, due } : t));
+  }
+
   function deleteTask(id) {
     setConfirmDelete(id);
   }
@@ -253,7 +267,10 @@ export default function App() {
             <Column
               key={col.id}
               col={col}
-              tasks={filtered.filter(t => t.col === col.id)}
+              tasks={filtered
+                .filter(t => t.col === col.id)
+                .sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0))
+              }
               dragOver={dragOver === col.id}
               dragId={dragId}
               onDragOver={e => onColDragOver(e, col.id)}
@@ -265,6 +282,7 @@ export default function App() {
               onEdit={updateText}
               onDelete={deleteTask}
               onStar={toggleStar}
+              onUpdateDue={updateDue}
               onAddPrompt={() => onAddToCol(col.id)}
             />
           ))}

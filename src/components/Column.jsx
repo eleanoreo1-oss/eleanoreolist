@@ -1,7 +1,7 @@
 import Card from './Card.jsx';
 import { Plus } from '../icons.jsx';
 
-export default function Column({ col, tasks, dragOver, dragId, onDragOver, onDragLeave, onDrop, onDragStart, onDragEnd, onToggle, onEdit, onDelete, onStar, onAddPrompt }) {
+export default function Column({ col, tasks, dragOver, dragId, onDragOver, onDragLeave, onDrop, onDragStart, onDragEnd, onToggle, onEdit, onDelete, onStar, onUpdateDue, onAddPrompt }) {
   return (
     <div
       className={`col${col.isDone ? ' col-done' : ''}${dragOver ? ' drag-over' : ''}`}
@@ -35,6 +35,7 @@ export default function Column({ col, tasks, dragOver, dragId, onDragOver, onDra
             onEdit={(text) => onEdit(task.id, text)}
             onDelete={() => onDelete(task.id)}
             onStar={() => onStar(task.id)}
+            onUpdateDue={(iso) => onUpdateDue(task.id, iso)}
             onDragStart={(e) => onDragStart(e, task.id)}
             onDragEnd={onDragEnd}
           />

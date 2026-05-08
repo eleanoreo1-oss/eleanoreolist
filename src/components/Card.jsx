@@ -2,9 +2,26 @@ import { useRef } from 'react';
 import { Check, Star, StarFill, X, Clock } from '../icons.jsx';
 import { dueLabel } from '../data.js';
 
-export default function Card({ task, accent, onToggle, onEdit, onDelete, onStar, onDragStart, onDragEnd, dragging }) {
+export default function Card({ task, accent, onToggle, onEdit, onDelete, onStar, onUpdateDue, onDragStart, onDragEnd, dragging }) {
   const due = dueLabel(task.due);
   const textRef = useRef(null);
+  const dateRef = useRef(null);
+
+  function openDatePicker() {
+    if (!dateRef.current) return;
+    // Pre-fill with a rough ISO date from the current label
+    const today = new Date();
+    let iso = '';
+    if (task.due === 'today') iso = toISO(today);
+    else if (task.due === 'tomorrow') { const d = new Date(today); d.setDate(d.getDate()+1); iso = toISO(d); }
+    else if (task.due?.startsWith('+')) { const d = new Date(today); d.setDate(d.getDate() + parseInt(task.due.slice(1))); iso = toISO(d); }
+    dateRef.current.value = iso;
+    dateRef.current.showPicker?.() ?? dateRef.current.click();
+  }
+
+  function toISO(d) {
+    return d.toISOString().slice(0, 10);
+  }
 
   function handleBlur(e) {
     const newText = e.target.textContent.trim();
@@ -51,13 +68,27 @@ export default function Card({ task, accent, onToggle, onEdit, onDelete, onStar,
           {task.starred ? <StarFill /> : <Star />}
         </button>
       </div>
-      {due && (
-        <div className="card-row2">
-          <span className={`pill${due.cls ? ' ' + due.cls : ''}`}>
+      <div className="card-row2">
+        {due ? (
+          <button
+            className={`pill pill-btn${due.cls ? ' ' + due.cls : ''}`}
+            onClick={openDatePicker}
+            title="Edit due date"
+          >
             <Clock />{due.label}
-          </span>
-        </div>
-      )}
+          </button>
+        ) : (
+          <button className="pill pill-btn pill-add-date" onClick={openDatePicker} title="Add due date">
+            <Clock />Add date
+          </button>
+        )}
+        <input
+          ref={dateRef}
+          type="date"
+          className="card-date-input"
+          onChange={e => onUpdateDue(e.target.value || null)}
+        />
+      </div>
       <button className="card-delete" title="Delete task" onClick={onDelete}>
         <X />
       </button>
