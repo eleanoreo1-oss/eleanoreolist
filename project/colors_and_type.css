@@ -1,0 +1,385 @@
+/* ============================================================
+   EDL Design System — colors_and_type.css
+   Vision concept: EDL × liquid glass.
+   Token names mirror the Figma source ($edl-color-{ramp}-{step}).
+   ============================================================ */
+
+/* ---------- Fonts ---------- */
+/* Brand: InspireTWDC (locally hosted). Outfit (display fallback) + Roboto Mono from Google Fonts. */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-LightItalic.otf') format('opentype'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Roman.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Italic.otf') format('opentype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-MediumItalic.otf') format('opentype'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Heavy.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-HeavyItalic.otf') format('opentype'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-Black.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('fonts/InspireTWDC-BlackItalic.otf') format('opentype'); font-weight: 900; font-style: italic; font-display: swap; }
+
+:root {
+  /* ============================================================
+     COLOR — Primary (Indigo) ramp
+     Base = #3611C8 (the EDL signature indigo)
+     ============================================================ */
+  --edl-color-primary-99: #F3F3FF;
+  --edl-color-primary-95: #E6E6FF;
+  --edl-color-primary-90: #CFCFFF;
+  --edl-color-primary-85: #B8B8FF;
+  --edl-color-primary-75: #9C92FF;
+  --edl-color-primary-65: #7E70FF;
+  --edl-color-primary-55: #5B43F2;
+  --edl-color-primary-50: #3611C8;
+  --edl-color-primary-40: #290CA1;
+  --edl-color-primary-30: #1F0985;
+  --edl-color-primary-20: #150670;
+  --edl-color-primary-10: #0A034A;
+  --edl-color-primary-05: #050125;
+
+  /* ============================================================
+     COLOR — Secondary (Blue) ramp
+     Base = #0072ED
+     ============================================================ */
+  --edl-color-secondary-99: #F6FAFF;
+  --edl-color-secondary-95: #EDF5FF;
+  --edl-color-secondary-90: #D6E8FF;
+  --edl-color-secondary-85: #BEDAFF;
+  --edl-color-secondary-75: #8EC0FF;
+  --edl-color-secondary-65: #5FA5FF;
+  --edl-color-secondary-55: #2F8CFF;
+  --edl-color-secondary-50: #0072ED;
+  --edl-color-secondary-40: #004ACF;
+  --edl-color-secondary-30: #00269F;
+  --edl-color-secondary-20: #001988;
+  --edl-color-secondary-10: #000658;
+
+  /* Tertiary (Purple) */
+  --edl-color-tertiary-99: #F9F3FE;
+  --edl-color-tertiary-95: #F2E6FD;
+  --edl-color-tertiary-90: #E6CFFA;
+  --edl-color-tertiary-85: #D9B8F7;
+  --edl-color-tertiary-75: #C08AEE;
+  --edl-color-tertiary-65: #A760E2;
+  --edl-color-tertiary-55: #8E3BD3;
+  --edl-color-tertiary-50: #7418C1;
+  --edl-color-tertiary-40: #610BA8;
+  --edl-color-tertiary-30: #4D028B;
+  --edl-color-tertiary-20: #43017B;
+  --edl-color-tertiary-10: #2E0059;
+
+  /* Neutral (Cool gray) */
+  --edl-color-neutral-99: #F7F9FA;
+  --edl-color-neutral-95: #EFF3F5;
+  --edl-color-neutral-90: #E2E9EC;
+  --edl-color-neutral-85: #D4DEE3;
+  --edl-color-neutral-75: #B8C7D0;
+  --edl-color-neutral-65: #9EB0BD;
+  --edl-color-neutral-55: #8498A9;
+  --edl-color-neutral-50: #6A8095;
+  --edl-color-neutral-40: #526374;
+  --edl-color-neutral-30: #3A4652;
+  --edl-color-neutral-20: #2E3841;
+  --edl-color-neutral-10: #171C20;
+  --edl-color-neutral-05: #0C0F12;
+
+  /* Semantic — Success */
+  --edl-color-success-99: #F9FFFB;
+  --edl-color-success-95: #F2FFF7;
+  --edl-color-success-85: #C2FEDB;
+  --edl-color-success-65: #61EBA7;
+  --edl-color-success-50: #00C274;
+  --edl-color-success-30: #087B60;
+  --edl-color-success-10: #094B43;
+
+  /* Semantic — Error */
+  --edl-color-error-99: #FFF5F7;
+  --edl-color-error-95: #FFEBEF;
+  --edl-color-error-85: #FFBCC8;
+  --edl-color-error-65: #FD5E78;
+  --edl-color-error-50: #C20031;
+  --edl-color-error-30: #7E0030;
+  --edl-color-error-10: #4B0023;
+
+  /* Semantic — Warning */
+  --edl-color-warning-99: #FFF4EC;
+  --edl-color-warning-95: #FFE9D9;
+  --edl-color-warning-85: #FFD2AD;
+  --edl-color-warning-65: #FFA857;
+  --edl-color-warning-50: #FF8000;
+  --edl-color-warning-30: #9D4200;
+  --edl-color-warning-10: #632D00;
+
+  /* Decorative — Aqua / Yellow / Pink */
+  --edl-color-aqua-95: #E6FDFF;
+  --edl-color-aqua-65: #69E9FF;
+  --edl-color-aqua-50: #25D1F4;
+  --edl-color-aqua-30: #18779C;
+
+  --edl-color-yellow-95: #FFFEE6;
+  --edl-color-yellow-65: #FFE25C;
+  --edl-color-yellow-50: #FDBE00;
+  --edl-color-yellow-30: #B59105;
+
+  --edl-color-pink-95: #F9D9FF;
+  --edl-color-pink-65: #F457FD;
+  --edl-color-pink-50: #EA04DF;
+  --edl-color-pink-30: #8B0685;
+
+  /* ============================================================
+     SEMANTIC TOKENS (light mode default)
+     ============================================================ */
+  --bg-page:         #FBFBFB;
+  --bg-surface:      #FFFFFF;
+  --bg-surface-alt:  var(--edl-color-neutral-99);
+  --bg-inverse:      var(--edl-color-neutral-10);
+
+  --fg-primary:      var(--edl-color-neutral-10);    /* primary text */
+  --fg-secondary:    var(--edl-color-neutral-40);    /* sub-text, captions */
+  --fg-muted:        var(--edl-color-neutral-50);    /* table meta */
+  --fg-disabled:     var(--edl-color-neutral-65);
+  --fg-on-brand:     #FFFFFF;
+  --fg-link:         var(--edl-color-primary-50);
+
+  --border-subtle:   var(--edl-color-neutral-90);
+  --border-default:  var(--edl-color-neutral-85);
+  --border-strong:   var(--edl-color-neutral-50);
+  --border-focus:    var(--edl-color-primary-50);
+
+  --brand-primary:   var(--edl-color-primary-50);
+  --brand-primary-hover:   var(--edl-color-primary-40);
+  --brand-primary-pressed: var(--edl-color-primary-30);
+  --brand-accent:    #928AFF;     /* light indigo accent (Cover) */
+  --brand-stroke:    #9747FF;     /* purple stroke accent */
+
+  /* ============================================================
+     ELEVATION
+     30 = popovers/dropdowns
+     50 = modals/toasts
+     glass = vision-blend additive
+     ============================================================ */
+  --elevation-30: 0 2px 6px rgba(0,0,0,0.10), 0 0 2px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.20);
+  --elevation-50: 1px 2px 10px rgba(0,0,0,0.20);
+
+  /* Glass surface tokens (vision blend) */
+  --glass-bg-light:        rgba(255,255,255,0.55);
+  --glass-bg-light-strong: rgba(255,255,255,0.72);
+  --glass-bg-dark:         rgba(23,28,32,0.55);
+  --glass-bg-dark-strong:  rgba(23,28,32,0.72);
+  --glass-stroke-light:    rgba(255,255,255,0.18);
+  --glass-stroke-dark:     rgba(255,255,255,0.10);
+  --glass-blur:            blur(40px) saturate(140%);
+  --glass-blur-soft:       blur(20px) saturate(120%);
+  --glass-shadow:          0 4px 30px rgba(54,17,200,0.15), 0 0 0 1px rgba(255,255,255,0.18) inset;
+
+  /* Vision-blend background gradient — soft indigo → aqua → pink mesh */
+  --bg-mesh:
+    radial-gradient(at 12% 18%, rgba(54,17,200,0.18) 0%, transparent 42%),
+    radial-gradient(at 88% 8%, rgba(37,209,244,0.16) 0%, transparent 38%),
+    radial-gradient(at 78% 92%, rgba(234,4,223,0.10) 0%, transparent 40%),
+    radial-gradient(at 8% 90%, rgba(116,24,193,0.14) 0%, transparent 44%),
+    linear-gradient(180deg, #FBFBFD 0%, #F3F3FF 100%);
+
+  /* ============================================================
+     SPACING (4px scale)
+     ============================================================ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-14: 56px;
+  --space-22: 88px;
+
+  /* RADII */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-pill: 999px;
+
+  /* ============================================================
+     TYPE — families
+     ============================================================ */
+  --font-display: 'Outfit', 'MultiplaneTWDC Display', 'InspireTWDC', system-ui, sans-serif;
+  --font-body:    'InspireTWDC', 'Inter', system-ui, sans-serif;
+  --font-mono:    'Roboto Mono', ui-monospace, Menlo, monospace;
+
+  /* TYPE RAMP — EDL Token name → size/weight/line-height */
+  --t80-size: 60px;  --t80-weight: 800;  --t80-lh: 72px;  /* largest page title (display) */
+  --t70-size: 42px;  --t70-weight: 800;  --t70-lh: 52px;
+  --t60-size: 38px;  --t60-weight: 800;  --t60-lh: 46px;
+  --t50-size: 30px;  --t50-weight: 800;  --t50-lh: 38px;
+  --t40-size: 21px;  --t40-weight: 800;  --t40-lh: 28px;  /* component title */
+  --t30-size: 16px;  --t30-weight: 500;  --t30-lh: 24px;  /* medium-large actions */
+  --t20-size: 14px;  --t20-weight: 400;  --t20-lh: 21px;  /* body */
+  --t15-size: 14px;  --t15-weight: 500;  --t15-lh: 18px;  /* link/small action */
+  --t10-size: 12px;  --t10-weight: 400;  --t10-lh: 18px;  /* metadata */
+  --t05-size: 12px;  --t05-weight: 800;  --t05-lh: 14px;  /* small badge */
+
+  /* ============================================================
+     MOTION
+     ============================================================ */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-micro: 120ms;
+  --dur-small: 180ms;
+  --dur-med:   320ms;
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-page:        var(--edl-color-neutral-10);
+    --bg-surface:     var(--edl-color-neutral-20);
+    --bg-surface-alt: var(--edl-color-neutral-30);
+    --fg-primary:     #FFFFFF;
+    --fg-secondary:   var(--edl-color-neutral-75);
+    --fg-muted:       var(--edl-color-neutral-65);
+    --border-subtle:  var(--edl-color-neutral-30);
+    --border-default: var(--edl-color-neutral-40);
+    --bg-mesh:
+      radial-gradient(at 12% 18%, rgba(54,17,200,0.45) 0%, transparent 42%),
+      radial-gradient(at 88% 8%, rgba(37,209,244,0.18) 0%, transparent 38%),
+      radial-gradient(at 78% 92%, rgba(234,4,223,0.18) 0%, transparent 40%),
+      linear-gradient(180deg, #0C0F12 0%, #171C20 100%);
+  }
+}
+
+[data-theme="dark"] {
+  --bg-page:        var(--edl-color-neutral-10);
+  --bg-surface:     var(--edl-color-neutral-20);
+  --bg-surface-alt: var(--edl-color-neutral-30);
+  --fg-primary:     #FFFFFF;
+  --fg-secondary:   var(--edl-color-neutral-75);
+  --fg-muted:       var(--edl-color-neutral-65);
+  --border-subtle:  var(--edl-color-neutral-30);
+  --border-default: var(--edl-color-neutral-40);
+}
+
+/* ============================================================
+   SEMANTIC TYPE STYLES
+   Use these classes (or copy declarations) for consistent type.
+   ============================================================ */
+body, .t-body {
+  font-family: var(--font-body);
+  font-size: var(--t20-size);
+  font-weight: var(--t20-weight);
+  line-height: var(--t20-lh);
+  color: var(--fg-primary);
+  letter-spacing: -0.005em;
+}
+
+.t-display, h1.display {
+  font-family: var(--font-display);
+  font-size: var(--t80-size);
+  font-weight: var(--t80-weight);
+  line-height: var(--t80-lh);
+  letter-spacing: -0.02em;
+  color: var(--fg-primary);
+}
+h1, .t-h1 {
+  font-family: var(--font-body);
+  font-size: var(--t70-size);
+  font-weight: var(--t70-weight);
+  line-height: var(--t70-lh);
+  letter-spacing: -0.018em;
+  color: var(--fg-primary);
+}
+h2, .t-h2 {
+  font-family: var(--font-body);
+  font-size: var(--t60-size);
+  font-weight: var(--t60-weight);
+  line-height: var(--t60-lh);
+  letter-spacing: -0.014em;
+  color: var(--fg-primary);
+}
+h3, .t-h3 {
+  font-family: var(--font-body);
+  font-size: var(--t50-size);
+  font-weight: var(--t50-weight);
+  line-height: var(--t50-lh);
+  letter-spacing: -0.011em;
+  color: var(--fg-primary);
+}
+h4, .t-h4 {
+  font-family: var(--font-body);
+  font-size: var(--t40-size);
+  font-weight: var(--t40-weight);
+  line-height: var(--t40-lh);
+  letter-spacing: -0.005em;
+  color: var(--fg-primary);
+}
+.t-action, .t-h5 {
+  font-family: var(--font-body);
+  font-size: var(--t30-size);
+  font-weight: var(--t30-weight);
+  line-height: var(--t30-lh);
+  color: var(--fg-primary);
+}
+.t-link, a {
+  font-family: var(--font-body);
+  font-size: var(--t15-size);
+  font-weight: var(--t15-weight);
+  line-height: var(--t15-lh);
+  text-decoration: underline;
+  color: var(--fg-link);
+}
+.t-meta {
+  font-family: var(--font-body);
+  font-size: var(--t10-size);
+  font-weight: var(--t10-weight);
+  line-height: var(--t10-lh);
+  color: var(--fg-secondary);
+}
+.t-badge {
+  font-family: var(--font-body);
+  font-size: var(--t05-size);
+  font-weight: var(--t05-weight);
+  line-height: var(--t05-lh);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--fg-primary);
+}
+code, .t-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--fg-primary);
+}
+p { text-wrap: pretty; }
+
+/* ============================================================
+   GLASS SURFACE UTILITY (vision-blend signature)
+   ============================================================ */
+.glass {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-stroke-light);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-xl);
+}
+.glass--soft {
+  backdrop-filter: var(--glass-blur-soft);
+  -webkit-backdrop-filter: var(--glass-blur-soft);
+}
+.glass--dark {
+  background: var(--glass-bg-dark);
+  border-color: var(--glass-stroke-dark);
+  color: #fff;
+}
+
+/* ============================================================
+   ELEVATION UTILS
+   ============================================================ */
+.elev-30 { box-shadow: var(--elevation-30); }
+.elev-50 { box-shadow: var(--elevation-50); }

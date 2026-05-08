@@ -1,0 +1,1605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>EleanoreoList</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  /* ============================================================
+     EleanoreoList — EDL × liquid glass
+     ============================================================ */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; }
+  body {
+    font-family: var(--font-body);
+    color: var(--fg-primary);
+    background: var(--bg-page);
+    overflow-x: hidden;
+  }
+
+  /* Animated mesh backdrop — restrained purple */
+  .scene {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(60% 70% at 14% 18%, rgba(54,17,200,0.55) 0%, transparent 60%),
+      radial-gradient(55% 65% at 88% 14%, rgba(91,67,242,0.40) 0%, transparent 60%),
+      radial-gradient(60% 70% at 6% 88%, rgba(116,24,193,0.45) 0%, transparent 60%),
+      linear-gradient(180deg, #0F0B26 0%, #060418 100%);
+  }
+  body[data-theme="light"] .scene {
+    background:
+      radial-gradient(50% 60% at 90% 88%, rgba(146,138,255,0.22) 0%, transparent 60%),
+      radial-gradient(40% 50% at 78% 72%, rgba(91,67,242,0.10) 0%, transparent 60%),
+      linear-gradient(180deg, #FBFBFD 0%, #F2F0FA 100%);
+  }
+  .scene::after {
+    content: ""; position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    opacity: 0.04; mix-blend-mode: overlay;
+  }
+
+  /* Floating slow-moving glass orbs for atmosphere */
+  .orb {
+    position: fixed; border-radius: 50%; filter: blur(60px);
+    pointer-events: none; z-index: 0; opacity: 0.55;
+    animation: drift 28s ease-in-out infinite;
+  }
+  .orb-1 { width: 520px; height: 520px; left: -140px; top: -120px; background: radial-gradient(circle, #5B43F2 0%, transparent 65%); }
+  .orb-2 { width: 460px; height: 460px; right: -80px; top: 35%; background: radial-gradient(circle, #928AFF 0%, transparent 65%); animation-delay: -8s; animation-duration: 34s; }
+  .orb-3 { width: 380px; height: 380px; left: 30%; bottom: -120px; background: radial-gradient(circle, #7418C1 0%, transparent 65%); animation-delay: -16s; animation-duration: 40s; opacity: 0.4; }
+  @keyframes drift {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50%     { transform: translate3d(40px,-30px,0) scale(1.08); }
+  }
+
+  /* ============================================================
+     Frame
+     ============================================================ */
+  .app {
+    position: relative; z-index: 1;
+    min-height: 100vh;
+    padding: 24px 32px 80px;
+    color: rgba(255,255,255,0.96);
+  }
+  body[data-theme="light"] .app { color: var(--fg-primary); }
+
+  /* ============================================================
+     Top bar — full-width edge bar
+     ============================================================ */
+  .topbar {
+    position: relative;
+    margin: -24px -32px 0;
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 32px;
+    background: rgba(20,16,40,0.55);
+    backdrop-filter: blur(40px) saturate(160%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 12px 40px rgba(0,0,0,0.30);
+  }
+  body[data-theme="light"] .topbar {
+    background: rgba(255,255,255,0.55);
+    border-bottom-color: rgba(0,0,0,0.05);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.8) inset,
+      0 8px 24px rgba(54,17,200,0.06);
+  }
+
+  .brand { display: flex; align-items: center; gap: 10px; padding-right: 8px; }
+  .brand-mark {
+    width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, #5B43F2 0%, #928AFF 100%);
+    box-shadow: 0 4px 14px rgba(91,67,242,0.55), inset 0 1px 0 rgba(255,255,255,0.4);
+    display: grid; place-items: center;
+  }
+  .brand-mark::before {
+    content: ""; width: 14px; height: 14px;
+    background:
+      linear-gradient(#fff,#fff) 0 0/3px 14px no-repeat,
+      linear-gradient(#fff,#fff) 0 0/14px 3px no-repeat,
+      linear-gradient(#fff,#fff) 0 5.5px/11px 3px no-repeat,
+      linear-gradient(#fff,#fff) 0 11px/14px 3px no-repeat;
+  }
+  .brand-name {
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 18px; letter-spacing: -0.01em;
+  }
+  .brand-name em {
+    font-style: normal;
+    color: #B8B8FF;
+  }
+  body[data-theme="light"] .brand-name em {
+    color: #4628E0;
+  }
+  .brand-version {
+    font-family: var(--font-mono); font-size: 10px; opacity: 0.55;
+    margin-left: 4px;
+  }
+
+  .search {
+    flex: 1; max-width: 520px;
+    display: flex; align-items: center; gap: 10px;
+    height: 38px; padding: 0 14px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    transition: all var(--dur-small) var(--ease-out);
+  }
+  body[data-theme="light"] .search {
+    background: rgba(255,255,255,0.55);
+    border-color: rgba(0,0,0,0.06);
+  }
+  .search:focus-within {
+    border-color: rgba(146,138,255,0.65);
+    box-shadow: 0 0 0 3px rgba(146,138,255,0.20);
+  }
+  .search svg { width: 16px; height: 16px; opacity: 0.7; flex-shrink: 0; }
+  .search input {
+    flex: 1; background: transparent; border: 0; outline: 0;
+    color: inherit; font: 400 14px/1 var(--font-body);
+  }
+  .search kbd {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 3px 6px; border-radius: 5px;
+    background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.15);
+    opacity: 0.7;
+  }
+  body[data-theme="light"] .search kbd {
+    background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.08);
+  }
+
+  .top-actions { display: flex; align-items: center; gap: 8px; }
+  .icon-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    color: inherit; cursor: pointer; padding: 0;
+    transition: all var(--dur-micro) var(--ease-out);
+  }
+  body[data-theme="light"] .icon-btn { background: rgba(255,255,255,0.6); border-color: rgba(0,0,0,0.06); }
+  .icon-btn:hover { background: rgba(255,255,255,0.14); transform: translateY(-1px); }
+  .icon-btn svg { width: 16px; height: 16px; display: block; }
+
+  .cta {
+    height: 36px; padding: 0 14px; border-radius: 10px;
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,0.18);
+    background: linear-gradient(180deg, rgba(91,67,242,0.95), rgba(54,17,200,0.95));
+    color: #fff; font: 500 13px/1 var(--font-body);
+    cursor: pointer; transition: all var(--dur-micro) var(--ease-out);
+    box-shadow: 0 6px 18px rgba(54,17,200,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
+  }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(54,17,200,0.55), inset 0 1px 0 rgba(255,255,255,0.35); }
+  .cta svg { width: 14px; height: 14px; }
+
+  /* ============================================================
+     Page header
+     ============================================================ */
+  .page-head {
+    margin: 28px 4px 18px;
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  }
+  .page-title {
+    font-family: var(--font-display);
+    font-size: 34px; font-weight: 600; line-height: 1.15;
+    letter-spacing: -0.02em; margin: 0 0 8px;
+    white-space: nowrap;
+  }
+  .page-title em {
+    font-style: normal;
+    color: #B8B8FF;
+  }
+  .page-sub { margin: 6px 0 0; opacity: 0.65; font-size: 14px; }
+
+  .stats { display: flex; gap: 10px; }
+  .stat {
+    padding: 10px 14px; border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    min-width: 90px;
+  }
+  body[data-theme="light"] .stat { background: rgba(255,255,255,0.55); border-color: rgba(255,255,255,0.7); }
+  .stat-num { font-family: var(--font-display); font-size: 22px; font-weight: 600; line-height: 1; }
+  .stat-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.6; margin-top: 4px; }
+
+  /* AI quick-add — special treatment */
+  .qadd {
+    margin: 0 4px 22px;
+    display: flex; flex-direction: column; gap: 0;
+    padding: 14px 16px; border-radius: 16px;
+    background: linear-gradient(180deg, rgba(146,138,255,0.10), rgba(91,67,242,0.06));
+    border: 1px solid rgba(146,138,255,0.28);
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+    box-shadow: 0 0 0 1px rgba(146,138,255,0.10) inset, 0 12px 30px rgba(91,67,242,0.18);
+  }
+  body[data-theme="light"] .qadd {
+    background: linear-gradient(180deg, rgba(146,138,255,0.10), rgba(255,255,255,0.65));
+    border-color: rgba(146,138,255,0.40);
+  }
+  .qadd-row { display: flex; align-items: center; gap: 12px; }
+  .qadd-glyph {
+    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+    display: grid; place-items: center;
+    background: linear-gradient(135deg, #5B43F2, #928AFF);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(91,67,242,0.50), inset 0 1px 0 rgba(255,255,255,0.30);
+    position: relative;
+  }
+  .qadd-glyph svg { width: 16px; height: 16px; }
+  .qadd-glyph::after {
+    content: ""; position: absolute; inset: -2px; border-radius: 11px;
+    background: conic-gradient(from 0deg, transparent, rgba(146,138,255,0.6), transparent 30%);
+    opacity: 0; pointer-events: none; animation: spin 2s linear infinite;
+  }
+  .qadd.thinking .qadd-glyph::after { opacity: 1; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .qadd-label {
+    font: 600 11px/1 var(--font-body); letter-spacing: 0.08em;
+    text-transform: uppercase; color: #B8B8FF; opacity: 0.85;
+    margin-bottom: 2px;
+  }
+  .qadd input {
+    flex: 1; background: transparent; border: 0; outline: 0;
+    font: 400 15px/1.4 var(--font-body); color: inherit;
+  }
+  .qadd input::placeholder { color: currentColor; opacity: 0.5; }
+
+  /* AI suggestion preview */
+  .qadd-preview {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px dashed rgba(146,138,255,0.25);
+    font-size: 12px;
+  }
+  .qadd-preview-label { opacity: 0.6; font-size: 11px; }
+  .qadd-preview .pill { font-size: 10px; }
+  .qadd-confirm {
+    margin-left: auto;
+    height: 26px; padding: 0 12px; border-radius: 8px;
+    border: 0; cursor: pointer;
+    background: linear-gradient(180deg, #928AFF, #5B43F2);
+    color: #fff; font: 600 12px/1 var(--font-body);
+    box-shadow: 0 4px 12px rgba(91,67,242,0.45);
+  }
+  .qadd-confirm:hover { transform: translateY(-1px); }
+
+  /* ============================================================
+     Kanban
+     ============================================================ */
+  .board {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .board.compact .col { padding: 14px; }
+
+  .col {
+    position: relative;
+    border-radius: 20px;
+    padding: 18px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(40px) saturate(160%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 30px 60px rgba(0,0,0,0.30);
+    min-height: 360px;
+    display: flex; flex-direction: column; gap: 12px;
+    transition: all var(--dur-small) var(--ease-out);
+  }
+  body[data-theme="light"] .col {
+    background: rgba(255,255,255,0.60);
+    border-color: rgba(255,255,255,0.75);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.95) inset,
+      0 16px 40px rgba(54,17,200,0.10);
+  }
+  .col.drag-over {
+    border-color: rgba(146,138,255,0.65);
+    box-shadow:
+      0 0 0 1px rgba(146,138,255,0.55) inset,
+      0 30px 60px rgba(91,67,242,0.35);
+  }
+  /* Tinted top edge per column — accent strip */
+  .col::before {
+    content: ""; position: absolute; left: 14px; right: 14px; top: 0;
+    height: 2px; border-radius: 2px;
+    background: var(--accent, #5B43F2);
+    box-shadow: 0 0 24px var(--accent, #5B43F2);
+    opacity: 0.85;
+  }
+
+  .col-head { display: flex; align-items: center; gap: 8px; padding: 0 4px; min-width: 0; }
+  .col-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: var(--accent); box-shadow: 0 0 12px var(--accent);
+  }
+  .col-title {
+    font-family: var(--font-display);
+    font-weight: 600; font-size: 15px; letter-spacing: -0.01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    min-width: 0; flex: 1;
+  }
+  .col-count {
+    margin-left: auto; padding: 2px 8px; border-radius: 999px;
+    font: 700 10px/1.4 var(--font-mono); flex-shrink: 0;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    opacity: 0.85;
+  }
+  body[data-theme="light"] .col-count { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.06); }
+  .col-add {
+    width: 22px; height: 22px; border-radius: 7px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    color: inherit; opacity: 0.85; padding: 0; flex-shrink: 0;
+  }
+  .col-add svg { width: 12px; height: 12px; display: block; }
+  body[data-theme="light"] .col-add { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.08); }
+  .col-add:hover { opacity: 1; }
+  .col-add svg { width: 12px; height: 12px; }
+
+  /* Cards */
+  .cards { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+  .empty {
+    margin-top: 8px;
+    padding: 22px 14px; text-align: center; opacity: 0.5;
+    border: 1px dashed rgba(255,255,255,0.18); border-radius: 12px;
+    font-size: 12px;
+  }
+  body[data-theme="light"] .empty { border-color: rgba(0,0,0,0.10); }
+
+  .card {
+    position: relative;
+    padding: 12px 12px 10px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    cursor: grab;
+    transition: all var(--dur-micro) var(--ease-out);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+  }
+  body[data-theme="light"] .card {
+    background: rgba(255,255,255,0.85);
+    border-color: rgba(255,255,255,0.95);
+    box-shadow: 0 4px 14px rgba(54,17,200,0.06), 0 1px 0 rgba(255,255,255,0.95) inset;
+  }
+  .card:hover {
+    transform: translateY(-1px);
+    border-color: rgba(146,138,255,0.45);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.25), 0 0 0 1px rgba(146,138,255,0.25);
+  }
+  body[data-theme="light"] .card:hover {
+    box-shadow: 0 10px 28px rgba(54,17,200,0.18), 0 0 0 1px rgba(146,138,255,0.45);
+  }
+  .card.dragging { opacity: 0.4; cursor: grabbing; }
+  .card.done .card-text { text-decoration: line-through; opacity: 0.5; }
+
+  .card-row1 { display: flex; gap: 10px; align-items: flex-start; }
+  .check {
+    width: 18px; height: 18px; border-radius: 6px; flex-shrink: 0;
+    border: 1.5px solid rgba(255,255,255,0.30);
+    cursor: pointer; transition: all var(--dur-micro) var(--ease-out);
+    display: grid; place-items: center;
+    margin-top: 1px;
+  }
+  body[data-theme="light"] .check { border-color: rgba(0,0,0,0.20); }
+  .check:hover { border-color: var(--accent); }
+  .check svg { width: 12px; height: 12px; opacity: 0; transition: opacity var(--dur-micro); color: #fff; }
+  .card.done .check {
+    background: var(--accent); border-color: var(--accent);
+    box-shadow: 0 0 14px color-mix(in oklab, var(--accent), transparent 60%);
+  }
+  .card.done .check svg { opacity: 1; }
+
+  .card-text {
+    flex: 1; font: 500 13.5px/1.4 var(--font-body);
+    word-break: break-word;
+    padding-right: 28px;
+    outline: 0; cursor: text;
+  }
+  .card-text[contenteditable="true"]:focus { outline: 0; }
+
+  .card-row2 {
+    margin-top: 8px; padding-left: 28px;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    font: 700 10px/1.4 var(--font-body);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.08);
+  }
+  body[data-theme="light"] .pill { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.06); }
+  .pill svg { width: 10px; height: 10px; }
+  .pill.p0 { background: rgba(194,0,49,0.22); border-color: rgba(253,94,120,0.45); color: #FFBCC8; }
+  .pill.p1 { background: rgba(146,138,255,0.18); border-color: rgba(146,138,255,0.45); color: #CFCFFF; }
+  .pill.p2 { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.65); }
+  body[data-theme="light"] .pill.p0 { background:#FFEBEF; border-color:#FFBCC8; color:#7E0030; }
+  body[data-theme="light"] .pill.p1 { background:#E6E6FF; border-color:#CFCFFF; color:#290CA1; }
+  body[data-theme="light"] .pill.p2 { background:rgba(0,0,0,0.04); border-color:rgba(0,0,0,0.08); color:rgba(0,0,0,0.55); }
+  .pill.due-today { background: rgba(146,138,255,0.20); border-color: rgba(146,138,255,0.4); color:#CFCFFF; }
+  .pill.due-overdue { background: rgba(194,0,49,0.30); border-color: rgba(253,94,120,0.55); color:#FFBCC8; }
+  body[data-theme="light"] .pill.due-today { background:#E6E6FF; border-color:#CFCFFF; color:#290CA1; }
+  body[data-theme="light"] .pill.due-overdue { background:#FFEBEF; border-color:#FFBCC8; color:#7E0030; }
+
+  /* Starred cards get a subtle gold outline */
+  .card.starred { box-shadow: 0 6px 14px rgba(0,0,0,0.18), 0 0 0 1px rgba(255,214,107,0.35); }
+  body[data-theme="light"] .card.starred { box-shadow: 0 4px 14px rgba(54,17,200,0.06), 0 1px 0 rgba(255,255,255,0.95) inset, 0 0 0 1px rgba(220,160,30,0.45); }
+
+  .card-star {
+    position: absolute; top: 6px; right: 6px;
+    width: 28px; height: 28px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent; border: 0; color: inherit;
+    opacity: 0.35; cursor: pointer; padding: 0;
+    transition: all var(--dur-micro) var(--ease-out);
+  }
+  .card-star:hover { opacity: 0.85; transform: scale(1.08); background: rgba(255,255,255,0.06); }
+  body[data-theme="light"] .card-star:hover { background: rgba(0,0,0,0.04); }
+  .card-star.on { opacity: 1; color: #FFD66B; filter: drop-shadow(0 0 6px rgba(255,214,107,0.6)); }
+  .card-star svg { width: 14px; height: 14px; display: block; }
+  .card-menu {
+    position: absolute; bottom: 8px; right: 8px;
+    width: 22px; height: 22px; border-radius: 6px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer; padding: 0;
+    color: inherit; opacity: 0;
+    background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.12);
+    transition: opacity var(--dur-micro);
+  }
+  .card:hover .card-menu { opacity: 0.7; }
+  .card-menu:hover { opacity: 1 !important; }
+  .card-menu svg { width: 12px; height: 12px; display: block; }
+
+  /* Completed column — muted, washed-out */
+  .col.col-done { opacity: 0.78; }
+  .col.col-done .card { background: rgba(255,255,255,0.03); }
+  body[data-theme="light"] .col.col-done .card { background: rgba(0,0,0,0.025); }
+  .col.col-done .card .card-text { text-decoration: line-through; opacity: 0.55; }
+  .col.col-done .card .check { background: var(--accent); border-color: var(--accent); }
+  .col.col-done .card .check svg { opacity: 1; }
+  .col.col-done::before { opacity: 0.4; }
+
+  /* Compact density variant */
+  .board.compact .card { padding: 8px 10px 8px; }
+  .board.compact .card-row2 { margin-top: 4px; padding-left: 26px; }
+  .board.compact .card-text { font-size: 13px; }
+
+  /* List density variant — single column stacked */
+  .board.list { grid-template-columns: 1fr; }
+  .board.list .col { min-height: 0; }
+
+  /* Footer */
+  .foot {
+    margin: 28px 4px 0; opacity: 0.55; font-size: 11px;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  .foot kbd {
+    font-family: var(--font-mono); font-size: 10px;
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  }
+  body[data-theme="light"] .foot kbd { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.08); }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .orb { animation: none; }
+    * { transition-duration: 0ms !important; }
+  }
+</style>
+</head>
+<body data-theme="dark">
+  <div class="scene"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" data-presets="env,react">
+/* === tweaks-panel.jsx === */
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "palette": ["#D97757", "#29261b", "#f6f4ef"],
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        options={['#D97757', '#2A6FDB', '#1F8A5B', '#7A5AE0']}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakColor  label="Palette" value={t.palette}
+//                        options={[['#D97757', '#29261b', '#f6f4ef'],
+//                                  ['#475569', '#0f172a', '#f1f5f9']]}
+//                        onChange={(v) => setTweak('palette', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    transform:scale(var(--dc-inv-zoom,1));transform-origin:bottom right;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+
+  .twk-chips{display:flex;gap:6px}
+  .twk-chip{position:relative;appearance:none;flex:1;min-width:0;height:46px;
+    padding:0;border:0;border-radius:6px;overflow:hidden;cursor:default;
+    box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);
+    transition:transform .12s cubic-bezier(.3,.7,.4,1),box-shadow .12s}
+  .twk-chip:hover{transform:translateY(-1px);
+    box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.12)}
+  .twk-chip[data-on="1"]{box-shadow:0 0 0 1.5px rgba(0,0,0,.85),
+    0 2px 6px rgba(0,0,0,.15)}
+  .twk-chip>span{position:absolute;top:0;bottom:0;right:0;width:34%;
+    display:flex;flex-direction:column;box-shadow:-1px 0 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i{flex:1;box-shadow:0 -1px 0 rgba(0,0,0,.1)}
+  .twk-chip>span>i:first-child{box-shadow:none}
+  .twk-chip svg{position:absolute;top:6px;left:6px;width:13px;height:13px;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+    // Same-window signal so in-page listeners (deck-stage rail thumbnails)
+    // can react — the parent message only reaches the host, not peers.
+    window.dispatchEvent(new CustomEvent('tweakchange', { detail: edits }));
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', noDeckControls = false, children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  // Auto-inject a rail toggle when a <deck-stage> is on the page. The
+  // toggle drives the deck's per-viewer _railVisible via window message;
+  // state is mirrored from the same localStorage key the deck reads so
+  // the control reflects reality across reloads. The mechanism is the
+  // message — authors who want custom placement can post it directly
+  // and pass noDeckControls to suppress this one.
+  const hasDeckStage = React.useMemo(
+    () => typeof document !== 'undefined' && !!document.querySelector('deck-stage'),
+    [],
+  );
+  // Hide the toggle until the host has actually enabled the rail (the
+  // __omelette_rail_enabled window message, posted only when the
+  // omelette_deck_rail_enabled flag is on for this user). The initial read
+  // covers TweaksPanel mounting after the message already arrived; the
+  // listener covers the common case of mounting first.
+  const [railEnabled, setRailEnabled] = React.useState(
+    () => hasDeckStage && !!document.querySelector('deck-stage')?._railEnabled,
+  );
+  React.useEffect(() => {
+    if (!hasDeckStage || railEnabled) return undefined;
+    const onMsg = (e) => {
+      if (e.data && e.data.type === '__omelette_rail_enabled') setRailEnabled(true);
+    };
+    window.addEventListener('message', onMsg);
+    return () => window.removeEventListener('message', onMsg);
+  }, [hasDeckStage, railEnabled]);
+  const [railVisible, setRailVisible] = React.useState(() => {
+    try { return localStorage.getItem('deck-stage.railVisible') !== '0'; } catch (e) { return true; }
+  });
+  const toggleRail = (on) => {
+    setRailVisible(on);
+    window.postMessage({ type: '__deck_rail_visible', on }, '*');
+  };
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" data-noncommentable=""
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">
+          {children}
+          {hasDeckStage && railEnabled && !noDeckControls && (
+            <TweakSection label="Deck">
+              <TweakToggle label="Thumbnail rail" value={railVisible} onChange={toggleRail} />
+            </TweakSection>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  // Segments wrap mid-word once per-segment width runs out. The track is
+  // ~248px (280 panel − 28 body pad − 4 seg pad), each button loses 12px
+  // to its own padding, and 11.5px system-ui averages ~6.3px/char — so 2
+  // options fit ~16 chars each, 3 fit ~10. Past that (or >3 options), fall
+  // back to a dropdown rather than wrap.
+  const labelLen = (o) => String(typeof o === 'object' ? o.label : o).length;
+  const maxLen = options.reduce((m, o) => Math.max(m, labelLen(o)), 0);
+  const fitsAsSegments = maxLen <= ({ 2: 16, 3: 10 }[options.length] ?? 0);
+  if (!fitsAsSegments) {
+    // <select> emits strings — map back to the original option value so the
+    // fallback stays type-preserving (numbers, booleans) like the segment path.
+    const resolve = (s) => {
+      const m = options.find((o) => String(typeof o === 'object' ? o.value : o) === s);
+      return m === undefined ? s : typeof m === 'object' ? m.value : m;
+    };
+    return <TweakSelect label={label} value={value} options={options}
+                        onChange={(s) => onChange(resolve(s))} />;
+  }
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+// Relative-luminance contrast pick — checkmarks drawn over a swatch need to
+// read on both #111 and #fafafa without per-option configuration. Hex input
+// only (#rgb / #rrggbb); named or rgb()/hsl() colors fall through to "light".
+function __twkIsLight(hex) {
+  const h = String(hex).replace('#', '');
+  const x = h.length === 3 ? h.replace(/./g, (c) => c + c) : h.padEnd(6, '0');
+  const n = parseInt(x.slice(0, 6), 16);
+  if (Number.isNaN(n)) return true;
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  return r * 299 + g * 587 + b * 114 > 148000;
+}
+
+const __TwkCheck = ({ light }) => (
+  <svg viewBox="0 0 14 14" aria-hidden="true">
+    <path d="M3 7.2 5.8 10 11 4.2" fill="none" strokeWidth="2.2"
+          strokeLinecap="round" strokeLinejoin="round"
+          stroke={light ? 'rgba(0,0,0,.78)' : '#fff'} />
+  </svg>
+);
+
+// TweakColor — curated color/palette picker. Each option is either a single
+// hex string or an array of 1-5 hex strings; the card adapts — a lone color
+// renders solid, a palette renders colors[0] as the hero (left ~2/3) with the
+// rest stacked in a sharp column on the right. onChange emits the
+// option in the shape it was passed (string stays string, array stays array).
+// Without options it falls back to the native color input for back-compat.
+function TweakColor({ label, value, options, onChange }) {
+  if (!options || !options.length) {
+    return (
+      <div className="twk-row twk-row-h">
+        <div className="twk-lbl"><span>{label}</span></div>
+        <input type="color" className="twk-swatch" value={value}
+               onChange={(e) => onChange(e.target.value)} />
+      </div>
+    );
+  }
+  // Native <input type=color> emits lowercase hex per the HTML spec, so
+  // compare case-insensitively. String() guards JSON.stringify(undefined),
+  // which returns the primitive undefined (no .toLowerCase).
+  const key = (o) => String(JSON.stringify(o)).toLowerCase();
+  const cur = key(value);
+  return (
+    <TweakRow label={label}>
+      <div className="twk-chips" role="radiogroup">
+        {options.map((o, i) => {
+          const colors = Array.isArray(o) ? o : [o];
+          const [hero, ...rest] = colors;
+          const sup = rest.slice(0, 4);
+          const on = key(o) === cur;
+          return (
+            <button key={i} type="button" className="twk-chip" role="radio"
+                    aria-checked={on} data-on={on ? '1' : '0'}
+                    aria-label={colors.join(', ')} title={colors.join(' · ')}
+                    style={{ background: hero }}
+                    onClick={() => onChange(o)}>
+              {sup.length > 0 && (
+                <span>
+                  {sup.map((c, j) => <i key={j} style={{ background: c }} />)}
+                </span>
+              )}
+              {on && <__TwkCheck light={__twkIsLight(hero)} />}
+            </button>
+          );
+        })}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+
+/* === EleanoreoList.app.jsx === */
+/* EleanoreoList — main app */
+const { useState, useEffect, useRef, useMemo } = React;
+
+const COLUMNS = [
+  { id: 'team',       label: 'Enterprise Team',       short: 'Team',       accent: '#928AFF' },
+  { id: 'leadership', label: 'Leadership Initiatives', short: 'Leadership', accent: '#928AFF' },
+  { id: 'life',       label: 'Life & Housekeeping',   short: 'Life',       accent: '#928AFF' },
+  { id: 'done',       label: 'Completed',             short: 'Done',       accent: '#5B5870', isDone: true },
+];
+
+const SEED = [
+  { id: 't1', col: 'team',       text: 'Write email to Bobby re: Q2 platform roadmap', due: 'today',     done: false, starred: true },
+  { id: 't2', col: 'team',       text: 'Finish calibration guide for Meghan',           due: 'tomorrow',  done: false, starred: true },
+  { id: 't3', col: 'done',       text: 'Review tooling team OKRs',                      due: null,        done: true, prevCol: 'team' },
+  { id: 't4', col: 'leadership', text: 'Empathy museum buildout — phase 2 brief',       due: '+3d',       done: false, starred: true },
+  { id: 't5', col: 'leadership', text: 'Prep talking points for Wednesday all-hands',   due: 'tomorrow',  done: false },
+  { id: 't6', col: 'leadership', text: 'Sponsor: internal AI guild proposal',           due: null,        done: false },
+  { id: 't7', col: 'life',       text: 'Inquire about taxes',                           due: '+5d',       done: false },
+  { id: 't8', col: 'life',       text: 'Approve travel for offsite',                    due: 'overdue',   done: false, starred: true },
+  { id: 't9', col: 'life',       text: 'Renew laptop loaner for the team',              due: null,        done: false },
+  { id: 't10', col: 'life',      text: 'Book dentist',                                  due: null,        done: false },
+  { id: 't11', col: 'life',      text: 'Pick up dry cleaning',                          due: 'today',     done: false },
+];
+
+/* ============================================================
+   Natural-language parser for quick add
+   "Write report by friday !p0 #personal" → { text, priority, due, col }
+   ============================================================ */
+function parseNL(input) {
+  let text = input;
+  let priority = null;
+  let due = null;
+  let col = null;
+
+  // Priority: !p0 / !p1 / !p2 or !! / ! / blank
+  const pMatch = text.match(/(?:^|\s)(!{1,3}|!p[0-2])/i);
+  if (pMatch) {
+    const tag = pMatch[1].toLowerCase();
+    if (tag === '!p0' || tag === '!!!') priority = 'P0';
+    else if (tag === '!p1' || tag === '!!') priority = 'P1';
+    else if (tag === '!p2' || tag === '!') priority = 'P2';
+    text = text.replace(pMatch[0], ' ');
+  }
+
+  // Bucket: #team #leadership #life (and aliases)
+  const cMatch = text.match(/(?:^|\s)#(team|leadership|life|house(?:keeping)?|personal|enterprise)\b/i);
+  if (cMatch) {
+    const c = cMatch[1].toLowerCase();
+    col = (c.startsWith('life') || c.startsWith('house') || c.startsWith('person')) ? 'life'
+        : c.startsWith('lead') ? 'leadership'
+        : 'team';
+    text = text.replace(cMatch[0], ' ');
+  }
+
+  // Due: "by today/tomorrow/friday" or "in 3d"
+  const dMatch = text.match(/\b(?:by|on|due)\s+(today|tomorrow|mon|tue|wed|thu|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/i)
+    || text.match(/\bin\s+(\d+)\s*d\b/i);
+  if (dMatch) {
+    const v = dMatch[1].toLowerCase();
+    if (/^\d+$/.test(v)) due = '+' + v + 'd';
+    else if (v === 'today') due = 'today';
+    else if (v === 'tomorrow') due = 'tomorrow';
+    else due = v.slice(0,3);
+    text = text.replace(dMatch[0], ' ');
+  }
+
+  text = text.replace(/\s+/g, ' ').trim();
+  return { text, priority, due, col };
+}
+
+/* ============================================================
+   AI Quick Add — uses window.claude.complete to interpret NL
+   ============================================================ */
+const AIQuickAdd = React.forwardRef(({ onAdd }, ref) => {
+  const [text, setText] = useState('');
+  const [thinking, setThinking] = useState(false);
+  const [preview, setPreview] = useState(null); // {text, priority, due, col, reasoning}
+
+  async function interpret() {
+    const v = text.trim();
+    if (!v) return;
+    setThinking(true);
+    setPreview(null);
+
+    // Try Claude first; fall back to local parser
+    try {
+      const prompt = `You are a task triage assistant for Eleanor's personal kanban board.
+She has 3 buckets:
+  - "team": Enterprise Team (her direct reports, eng & design tooling work)
+  - "leadership": Leadership Initiatives (cross-org, exec, big-bet projects)
+  - "life": Life & Housekeeping (admin, taxes, errands, personal appointments)
+
+Given this user input, return ONLY a single-line JSON object with these keys:
+  text: cleaned task title (no priority/date markers, imperative voice)
+  col: one of "team" | "leadership" | "life"
+  priority: "P0" (urgent/blocker) | "P1" (important) | "P2" (normal)
+  due: one of "today" | "tomorrow" | "+Nd" (N days) | "mon"|"tue"|"wed"|"thu"|"fri"|"sat"|"sun" | null
+  reasoning: 4-7 word justification of bucket choice
+
+Input: ${JSON.stringify(v)}
+
+Respond with ONLY the JSON, no prose, no code fences.`;
+
+      const raw = await window.claude.complete(prompt);
+      const cleaned = raw.replace(/^```(?:json)?\s*/, '').replace(/\s*```$/, '').trim();
+      const parsed = JSON.parse(cleaned);
+      setPreview(parsed);
+    } catch (err) {
+      // Local fallback
+      const local = parseNL(v);
+      setPreview({ ...local, col: local.col || 'team', reasoning: 'Local parse (offline)' });
+    }
+    setThinking(false);
+  }
+
+  function confirm() {
+    if (!preview) return;
+    onAdd(preview);
+    setText('');
+    setPreview(null);
+  }
+
+  function onKey(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (preview) confirm();
+      else interpret();
+    } else if (e.key === 'Escape') {
+      setPreview(null);
+      setText('');
+    }
+  }
+
+  const due = preview ? dueLabel(preview.due) : null;
+  const colLabel = preview ? (COLUMNS.find(c => c.id === preview.col)?.label || preview.col) : '';
+
+  return (
+    <div className={`qadd ${thinking ? 'thinking' : ''}`}>
+      <div className="qadd-row">
+        <div className="qadd-glyph"><I.Sparkle /></div>
+        <div style={{flex: 1, display:'flex', flexDirection:'column', gap: 2}}>
+          <div className="qadd-label">Ask Eleanoreo</div>
+          <input
+            ref={ref}
+            value={text}
+            onChange={(e) => { setText(e.target.value); if (preview) setPreview(null); }}
+            onKeyDown={onKey}
+            placeholder={thinking ? 'Thinking…' : 'Tell me what you need to do — I\'ll figure out where it goes'}
+          />
+        </div>
+      </div>
+      {preview && (
+        <div className="qadd-preview">
+          <span className="qadd-preview-label">Eleanoreo suggests:</span>
+          <span className="pill" style={{background:'rgba(146,138,255,0.18)', borderColor:'rgba(146,138,255,0.45)', color:'#CFCFFF'}}>
+            <I.Sparkle /> {colLabel}
+          </span>
+          {due && <span className={`pill ${due.cls}`}><I.Clock />{due.label}</span>}
+          <span style={{opacity:0.55, fontSize:11, fontStyle:'italic'}}>{preview.reasoning}</span>
+          <button className="qadd-confirm" onClick={confirm}>Add task ↵</button>
+        </div>
+      )}
+    </div>
+  );
+});
+
+function dueLabel(d) {
+  if (!d) return null;
+  if (d === 'today')   return { label: 'Today',   cls: 'due-today' };
+  if (d === 'tomorrow')return { label: 'Tomorrow',cls: '' };
+  if (d === 'overdue') return { label: 'Overdue', cls: 'due-overdue' };
+  if (d.startsWith('+')) return { label: 'In '+ d.slice(1), cls: '' };
+  if (/^(mon|tue|wed|thu|fri|sat|sun)$/.test(d)) return { label: d[0].toUpperCase()+d.slice(1), cls: '' };
+  return { label: d, cls: '' };
+}
+
+/* ============================================================
+   Icons (inline, currentColor)
+   ============================================================ */
+const I = {
+  Search:  () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.35-4.35"/></svg>,
+  Plus:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>,
+  Check:   () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>,
+  Sparkle: () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3zM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14z"/></svg>,
+  Sun:     () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>,
+  Moon:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>,
+  Clock:   () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>,
+  Flag:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22V4a2 2 0 0 1 2-2h11l-2 5 2 5H6"/></svg>,
+  More:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><circle cx="5" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="19" cy="12" r="1.2"/></svg>,
+  Star:    () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  StarFill:() => <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>,
+  Filter:  () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>,
+};
+
+/* ============================================================
+   App
+   ============================================================ */
+const ELEANOR_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "layout": "kanban",
+  "density": "comfy",
+  "glass": "full"
+}/*EDITMODE-END*/;
+
+function App() {
+  const [tw, setTweak] = window.useTweaks ? window.useTweaks(ELEANOR_TWEAK_DEFAULTS) : [ELEANOR_TWEAK_DEFAULTS, () => {}];
+
+  const [theme, setTheme] = useState('dark');
+  const [tasks, setTasks] = useState(SEED);
+  const [draftCol, setDraftCol] = useState(null);
+  const [query, setQuery] = useState('');
+  const [dragId, setDragId] = useState(null);
+  const [dragOver, setDragOver] = useState(null);
+  const quickRef = useRef(null);
+
+  useEffect(() => { document.body.dataset.theme = theme; }, [theme]);
+
+  // Glass intensity overrides via root CSS
+  useEffect(() => {
+    const root = document.documentElement;
+    if (tw.glass === 'subtle')   root.style.setProperty('--glass-blur', 'blur(20px) saturate(120%)');
+    else if (tw.glass === 'balanced') root.style.setProperty('--glass-blur', 'blur(28px) saturate(140%)');
+    else                          root.style.setProperty('--glass-blur', 'blur(40px) saturate(160%)');
+  }, [tw.glass]);
+
+  // ⌘K focus search
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('search-input')?.focus();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault();
+        quickRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return tasks;
+    const q = query.toLowerCase();
+    return tasks.filter(t => t.text.toLowerCase().includes(q));
+  }, [tasks, query]);
+
+  const stats = useMemo(() => {
+    const open = tasks.filter(t => !t.done);
+    return {
+      total: tasks.length,
+      open: open.length,
+      today: open.filter(t => t.due === 'today').length,
+      overdue: open.filter(t => t.due === 'overdue').length,
+    };
+  }, [tasks]);
+
+  function addTask({ text, priority, due, col }) {
+    if (!text) return;
+    const id = 'n' + Date.now() + Math.random().toString(36).slice(2,5);
+    setTasks(s => [...s, {
+      id, col: col || 'team', text,
+      priority: priority || 'P2',
+      due: due || null,
+      done: false
+    }]);
+  }
+
+  function onQuickAdd(e) {
+    if (e.key !== 'Enter') return;
+    const v = e.target.value.trim();
+    if (!v) return;
+    const parsed = parseNL(v);
+    addTask(parsed);
+    e.target.value = '';
+  }
+
+  function toggleDone(id) {
+    setTasks(s => s.map(t => {
+      if (t.id !== id) return t;
+      if (t.col === 'done') {
+        // restore to its prior bucket
+        return { ...t, col: t.prevCol || 'team', done: false, prevCol: undefined };
+      }
+      return { ...t, prevCol: t.col, col: 'done', done: true };
+    }));
+  }
+  function updateText(id, text) {
+    setTasks(s => s.map(t => t.id === id ? {...t, text} : t));
+  }
+  function deleteTask(id) {
+    setTasks(s => s.filter(t => t.id !== id));
+  }
+  function toggleStar(id) {
+    setTasks(s => s.map(t => t.id === id ? {...t, starred: !t.starred} : t));
+  }
+  function cyclePriority(id) {
+    // kept as no-op for back-compat
+  }
+
+  // Drag & drop
+  function onDragStart(e, id) { setDragId(id); e.dataTransfer.effectAllowed = 'move'; }
+  function onDragEnd() { setDragId(null); setDragOver(null); }
+  function onColDragOver(e, colId) { e.preventDefault(); setDragOver(colId); }
+  function onColDrop(e, colId) {
+    e.preventDefault();
+    if (!dragId) return;
+    setTasks(s => {
+      const moving = s.find(t => t.id === dragId);
+      if (!moving) return s;
+      const rest = s.filter(t => t.id !== dragId);
+      // figure out drop position by mouse Y
+      const els = e.currentTarget.querySelectorAll('.card');
+      let insertBefore = null;
+      els.forEach(el => {
+        const r = el.getBoundingClientRect();
+        if (e.clientY < r.top + r.height/2 && insertBefore === null) {
+          insertBefore = el.dataset.id;
+        }
+      });
+      const updated = {...moving, col: colId, done: colId === 'done', prevCol: colId === 'done' ? (moving.col === 'done' ? moving.prevCol : moving.col) : undefined};
+      if (insertBefore && insertBefore !== dragId) {
+        const out = [];
+        for (const t of rest) {
+          if (t.id === insertBefore) out.push(updated);
+          out.push(t);
+        }
+        return out;
+      }
+      // append to col
+      const colTasks = rest.filter(t => t.col === colId);
+      const others = rest.filter(t => t.col !== colId);
+      return [...others, ...colTasks, updated];
+    });
+    setDragId(null); setDragOver(null);
+  }
+
+  return (
+    <div className="app">
+      {/* Top bar */}
+      <div className="topbar">
+        <div className="brand">
+          <div className="brand-mark" aria-hidden="true"></div>
+          <div>
+            <div className="brand-name"><em>Eleanoreo</em>List</div>
+          </div>
+          <span className="brand-version">v0.1 · edl</span>
+        </div>
+
+        <div className="search">
+          <I.Search />
+          <input id="search-input" placeholder="Search tasks…" value={query} onChange={e => setQuery(e.target.value)} />
+          <kbd>⌘K</kbd>
+        </div>
+
+        <div className="top-actions">
+          <button className="icon-btn" title="Filter"><I.Filter /></button>
+          <button className="icon-btn" title="Toggle theme" onClick={() => setTheme(t => t === 'dark' ? 'light' : 'dark')}>
+            {theme === 'dark' ? <I.Sun /> : <I.Moon />}
+          </button>
+          <button className="cta" onClick={() => quickRef.current?.focus()}>
+            <I.Plus /> New task
+          </button>
+        </div>
+      </div>
+
+      {/* Page header */}
+      <div className="page-head">
+        <div>
+          <h1 className="page-title">Hi Eleanor, <em>it's Wednesday, May 7</em>.</h1>
+          <p className="page-sub">{stats.open} open · {stats.today} due today {stats.overdue ? '· ' + stats.overdue + ' overdue' : ''}</p>
+        </div>
+        <div className="stats">
+          <div className="stat"><div className="stat-num">{stats.open}</div><div className="stat-lbl">Open</div></div>
+          <div className="stat"><div className="stat-num">{stats.today}</div><div className="stat-lbl">Today</div></div>
+          <div className="stat"><div className="stat-num" style={{color:'#FFBCC8'}}>{stats.overdue}</div><div className="stat-lbl">Overdue</div></div>
+          <div className="stat"><div className="stat-num" style={{opacity:0.5}}>{stats.total - stats.open}</div><div className="stat-lbl">Done</div></div>
+        </div>
+      </div>
+
+      {/* AI quick add */}
+      <AIQuickAdd ref={quickRef} onAdd={addTask} />
+
+      {/* Board */}
+      <div className={`board ${tw.density === 'compact' ? 'compact' : ''} ${tw.layout === 'list' ? 'list' : ''}`}>
+        {COLUMNS.map(col => {
+          const items = filtered.filter(t => t.col === col.id);
+          return (
+            <div
+              key={col.id}
+              className={`col ${col.isDone ? 'col-done' : ''} ${dragOver === col.id ? 'drag-over' : ''}`}
+              style={{ '--accent': col.accent }}
+              onDragOver={(e) => onColDragOver(e, col.id)}
+              onDragLeave={() => setDragOver(null)}
+              onDrop={(e) => onColDrop(e, col.id)}
+            >
+              <div className="col-head">
+                <span className="col-dot"></span>
+                <span className="col-title">{col.label}</span>
+                <span className="col-count">{items.length}</span>
+                <button className="col-add" title="Add to this list" onClick={() => {
+                  const text = prompt(`New task for ${col.label}:`);
+                  if (text) addTask({ text, col: col.id, priority: 'P2' });
+                }}><I.Plus /></button>
+              </div>
+
+              <div className="cards">
+                {items.length === 0 && <div className="empty">Drop a task here, or click +</div>}
+                {items.map(task => (
+                  <Card
+                    key={task.id}
+                    task={task}
+                    accent={col.accent}
+                    onToggle={() => toggleDone(task.id)}
+                    onEdit={(text) => updateText(task.id, text)}
+                    onDelete={() => deleteTask(task.id)}
+                    onCyclePriority={() => toggleStar(task.id)}
+                    onDragStart={(e) => onDragStart(e, task.id)}
+                    onDragEnd={onDragEnd}
+                    dragging={dragId === task.id}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="foot">
+        <span><kbd>⌘K</kbd> search</span>
+        <span><kbd>⌘N</kbd> new task</span>
+        <span><kbd>by friday</kbd> due date</span>
+        <span><kbd>#team</kbd> <kbd>#leadership</kbd> <kbd>#house</kbd> <kbd>#personal</kbd> bucket</span>
+      </div>
+
+      {/* Tweaks panel */}
+      {window.TweaksPanel && (
+        <window.TweaksPanel title="Tweaks">
+          <window.TweakSection title="Layout">
+            <window.TweakRadio
+              label="Layout"
+              value={tw.layout}
+              options={[
+                { value: 'kanban', label: 'Kanban' },
+                { value: 'list',   label: 'Stacked' },
+              ]}
+              onChange={(v) => setTweak('layout', v)}
+            />
+            <window.TweakRadio
+              label="Density"
+              value={tw.density}
+              options={[
+                { value: 'comfy',   label: 'Comfy' },
+                { value: 'compact', label: 'Compact' },
+              ]}
+              onChange={(v) => setTweak('density', v)}
+            />
+          </window.TweakSection>
+          <window.TweakSection title="Atmosphere">
+            <window.TweakRadio
+              label="Glass intensity"
+              value={tw.glass}
+              options={[
+                { value: 'subtle',   label: 'Subtle' },
+                { value: 'balanced', label: 'Balanced' },
+                { value: 'full',     label: 'Full' },
+              ]}
+              onChange={(v) => setTweak('glass', v)}
+            />
+          </window.TweakSection>
+        </window.TweaksPanel>
+      )}
+    </div>
+  );
+}
+
+function Card({ task, accent, onToggle, onEdit, onDelete, onCyclePriority, onDragStart, onDragEnd, dragging }) {
+  const due = dueLabel(task.due);
+  return (
+    <div
+      className={`card ${task.done ? 'done' : ''} ${task.starred ? 'starred' : ''} ${dragging ? 'dragging' : ''}`}
+      draggable
+      data-id={task.id}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
+      <div className="card-row1">
+        <div className="check" style={{'--accent': accent}} onClick={onToggle}>
+          <I.Check />
+        </div>
+        <div
+          className="card-text"
+          contentEditable
+          suppressContentEditableWarning
+          style={{paddingRight: '34px'}}
+          onBlur={(e) => onEdit(e.target.textContent)}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } }}
+        >{task.text}</div>
+        <button
+          className={`card-star ${task.starred ? 'on' : ''}`}
+          onClick={onCyclePriority}
+          title={task.starred ? 'Unstar' : 'Star'}
+        >{task.starred ? <I.StarFill /> : <I.Star />}</button>
+      </div>
+      {due && (
+        <div className="card-row2">
+          <span className={`pill ${due.cls}`}><I.Clock />{due.label}</span>
+        </div>
+      )}
+      <button className="card-menu" title="Delete" onClick={onDelete}><I.More /></button>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>

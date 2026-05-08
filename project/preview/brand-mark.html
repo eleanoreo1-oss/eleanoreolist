@@ -1,0 +1,18 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>EDL · Brand Mark</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:transparent}
+  .wrap{display:flex;align-items:stretch;height:170px;border-radius:14px;overflow:hidden;border:1px solid var(--edl-color-neutral-90);background:#fff}
+  .left{flex:1;background:#3611C8;display:flex;align-items:center;justify-content:center;position:relative}
+  .left::before{content:"";position:absolute;inset:0;background:radial-gradient(at 70% 20%, rgba(146,138,255,0.55) 0%, transparent 55%),radial-gradient(at 20% 80%, rgba(37,209,244,0.25) 0%, transparent 50%);}
+  .left .badge{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:#61EBA7;color:#000;border-radius:4px;padding:3px 10px;font:800 7px/1 Inter,sans-serif;letter-spacing:.08em}
+  .right{flex:1;display:flex;align-items:center;justify-content:center;background:#fff}
+  img{position:relative;z-index:2}
+</style></head>
+<body>
+<div class="wrap">
+  <div class="left"><span class="badge">ACTIVE</span><img src="../assets/edl-mark.svg" width="200"></div>
+  <div class="right"><img src="../assets/edl-mark-dark.svg" width="200"></div>
+</div>
+</body></html>

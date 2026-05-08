@@ -1,0 +1,55 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>EDL · Semantic colors</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html,body{margin:0;padding:0;background:#fff;font-family:var(--font-body)}
+  .wrap{padding:16px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .col{display:flex;flex-direction:column;gap:8px}
+  .name{font:800 11px/1 var(--font-body);letter-spacing:.04em;text-transform:uppercase}
+  .ramp{display:flex;height:54px;border-radius:8px;overflow:hidden;border:1px solid rgba(0,0,0,.06)}
+  .ramp .step{flex:1;display:flex;align-items:flex-end;padding:5px;color:#fff;font:800 9px/1 var(--font-body)}
+  .step.lt{color:#171C20}
+  .swatch{display:flex;align-items:center;gap:8px;font:500 12px/1 var(--font-body);color:#171C20}
+  .chip{width:18px;height:18px;border-radius:5px;border:1px solid rgba(0,0,0,.06)}
+  .hex{font-family:var(--font-mono);color:#526374;font-size:11px}
+</style></head>
+<body>
+<div class="wrap">
+  <div class="col">
+    <div class="name" style="color:#087B60">Success</div>
+    <div class="ramp">
+      <div class="step lt" style="background:#F2FFF7"></div>
+      <div class="step lt" style="background:#C2FEDB"></div>
+      <div class="step lt" style="background:#61EBA7"></div>
+      <div class="step" style="background:#00C274"></div>
+      <div class="step" style="background:#087B60"></div>
+      <div class="step" style="background:#094B43"></div>
+    </div>
+    <div class="swatch"><span class="chip" style="background:#00C274"></span>Base <span class="hex">#00C274</span></div>
+  </div>
+  <div class="col">
+    <div class="name" style="color:#7E0030">Error</div>
+    <div class="ramp">
+      <div class="step lt" style="background:#FFEBEF"></div>
+      <div class="step lt" style="background:#FFBCC8"></div>
+      <div class="step" style="background:#FD5E78"></div>
+      <div class="step" style="background:#C20031"></div>
+      <div class="step" style="background:#7E0030"></div>
+      <div class="step" style="background:#4B0023"></div>
+    </div>
+    <div class="swatch"><span class="chip" style="background:#C20031"></span>Base <span class="hex">#C20031</span></div>
+  </div>
+  <div class="col">
+    <div class="name" style="color:#9D4200">Warning</div>
+    <div class="ramp">
+      <div class="step lt" style="background:#FFE9D9"></div>
+      <div class="step lt" style="background:#FFD2AD"></div>
+      <div class="step lt" style="background:#FFA857"></div>
+      <div class="step" style="background:#FF8000"></div>
+      <div class="step" style="background:#9D4200"></div>
+      <div class="step" style="background:#632D00"></div>
+    </div>
+    <div class="swatch"><span class="chip" style="background:#FF8000"></span>Base <span class="hex">#FF8000</span></div>
+  </div>
+</div>
+</body></html>
