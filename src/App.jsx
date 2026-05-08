@@ -210,7 +210,7 @@ export default function App() {
           <div className="brand">
             <div className="brand-mark" aria-hidden="true" />
             <div>
-              <div className="brand-name"><em>Eleanoreo</em>List</div>
+              <div className="brand-name"><em>Eleanoreo</em>Hub</div>
             </div>
             <span className="brand-version">v0.1 · edl</span>
           </div>
