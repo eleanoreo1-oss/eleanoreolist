@@ -1,0 +1,89 @@
+/* ============================================================
+   EDL Design System — tokens.css
+   Vision concept: EDL × liquid glass.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Light.otf') format('opentype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-LightItalic.otf') format('opentype'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Roman.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Italic.otf') format('opentype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-MediumItalic.otf') format('opentype'); font-weight: 500; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Heavy.otf') format('opentype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-HeavyItalic.otf') format('opentype'); font-weight: 700; font-style: italic; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-Black.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+@font-face { font-family: 'InspireTWDC'; src: url('/fonts/InspireTWDC-BlackItalic.otf') format('opentype'); font-weight: 900; font-style: italic; font-display: swap; }
+
+:root {
+  /* COLOR — Primary (Indigo) */
+  --edl-color-primary-99: #F3F3FF;
+  --edl-color-primary-95: #E6E6FF;
+  --edl-color-primary-90: #CFCFFF;
+  --edl-color-primary-85: #B8B8FF;
+  --edl-color-primary-75: #9C92FF;
+  --edl-color-primary-65: #7E70FF;
+  --edl-color-primary-55: #5B43F2;
+  --edl-color-primary-50: #3611C8;
+  --edl-color-primary-40: #290CA1;
+  --edl-color-primary-30: #1F0985;
+  --edl-color-primary-20: #150670;
+  --edl-color-primary-10: #0A034A;
+  --edl-color-primary-05: #050125;
+
+  /* COLOR — Neutral (Cool gray) */
+  --edl-color-neutral-99: #F7F9FA;
+  --edl-color-neutral-95: #EFF3F5;
+  --edl-color-neutral-90: #E2E9EC;
+  --edl-color-neutral-85: #D4DEE3;
+  --edl-color-neutral-75: #B8C7D0;
+  --edl-color-neutral-65: #9EB0BD;
+  --edl-color-neutral-55: #8498A9;
+  --edl-color-neutral-50: #6A8095;
+  --edl-color-neutral-40: #526374;
+  --edl-color-neutral-30: #3A4652;
+  --edl-color-neutral-20: #2E3841;
+  --edl-color-neutral-10: #171C20;
+  --edl-color-neutral-05: #0C0F12;
+
+  /* Semantic */
+  --edl-color-error-50: #C20031;
+  --edl-color-error-65: #FD5E78;
+  --edl-color-error-85: #FFBCC8;
+
+  /* SEMANTIC TOKENS (light mode default) */
+  --bg-page:        #FBFBFB;
+  --bg-surface:     #FFFFFF;
+  --fg-primary:     var(--edl-color-neutral-10);
+  --fg-secondary:   var(--edl-color-neutral-40);
+  --fg-muted:       var(--edl-color-neutral-50);
+  --fg-link:        var(--edl-color-primary-50);
+  --border-subtle:  var(--edl-color-neutral-90);
+  --brand-primary:  var(--edl-color-primary-50);
+
+  /* Glass tokens */
+  --glass-blur:     blur(40px) saturate(160%);
+  --glass-blur-soft: blur(20px) saturate(120%);
+
+  /* SPACING */
+  --space-1: 4px;  --space-2: 8px;   --space-3: 12px;
+  --space-4: 16px; --space-5: 20px;  --space-6: 24px;
+  --space-8: 32px; --space-10: 40px; --space-14: 56px;
+
+  /* RADII */
+  --radius-sm: 4px;  --radius-md: 8px;  --radius-lg: 12px;
+  --radius-xl: 16px; --radius-2xl: 20px; --radius-pill: 999px;
+
+  /* TYPE */
+  --font-display: 'Outfit', system-ui, sans-serif;
+  --font-body: 'InspireTWDC', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, monospace;
+
+  /* MOTION */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-inout: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-micro: 120ms;
+  --dur-small: 180ms;
+  --dur-med: 320ms;
+}
