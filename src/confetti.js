@@ -2,21 +2,63 @@
 
 const CONFIGS = {
   team: {
-    count: 90,
+    count: 80,
     type: 'sparkle',
     colors: ['#928AFF', '#5B43F2', '#B8B8FF', '#7418C1', '#CFCFFF', '#ffffff', '#E6E6FF', '#7E70FF'],
   },
   leadership: {
-    count: 90,
+    count: 80,
     type: 'sparkle',
     colors: ['#FF69B4', '#EA04DF', '#928AFF', '#5B43F2', '#69E9FF', '#FFBCC8', '#C08AEE', '#F457FD', '#D9B8F7'],
   },
   life: {
-    count: 60,
+    count: 55,
     type: 'emoji',
-    emojis: ['🐱', '🐈', '🧶', '🐾', '🐈‍⬛', '😸', '🐱', '🧶', '🐾', '🐈'],
+    emojis: ['🐱', '🧶', '🐾'],
   },
 };
+
+// 4-pointed sparkle path (100×100 viewBox) — concave bezier sides like the reference image
+const SPARKLE_PATH = 'M50 0Q53 47 100 50Q53 53 50 100Q47 53 0 50Q47 47 50 0Z';
+
+function makeSparkleSVG(size, color) {
+  const ns  = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 100 100');
+  svg.setAttribute('width',  size);
+  svg.setAttribute('height', size);
+  svg.style.overflow = 'visible';
+
+  const path = document.createElementNS(ns, 'path');
+  path.setAttribute('d', SPARKLE_PATH);
+  path.setAttribute('fill', color);
+
+  // Soft glow
+  const defs   = document.createElementNS(ns, 'defs');
+  const filter = document.createElementNS(ns, 'filter');
+  const fid    = 'g' + Math.random().toString(36).slice(2, 6);
+  filter.setAttribute('id', fid);
+  filter.setAttribute('x', '-50%');
+  filter.setAttribute('y', '-50%');
+  filter.setAttribute('width', '200%');
+  filter.setAttribute('height', '200%');
+  const blur = document.createElementNS(ns, 'feGaussianBlur');
+  blur.setAttribute('stdDeviation', '6');
+  blur.setAttribute('result', 'b');
+  const merge = document.createElementNS(ns, 'feMerge');
+  ['b', 'SourceGraphic'].forEach(i => {
+    const n = document.createElementNS(ns, 'feMergeNode');
+    if (i === 'b') n.setAttribute('in', i);
+    merge.appendChild(n);
+  });
+  filter.appendChild(blur);
+  filter.appendChild(merge);
+  defs.appendChild(filter);
+  svg.appendChild(defs);
+  path.setAttribute('filter', `url(#${fid})`);
+  svg.appendChild(path);
+  return svg;
+}
 
 let cssInjected = false;
 function injectCSS() {
@@ -25,9 +67,9 @@ function injectCSS() {
   const s = document.createElement('style');
   s.textContent = `
     @keyframes confetti-fall {
-      0%   { transform: translate(0,0) rotate(0deg) scale(1); opacity: 1; }
-      75%  { opacity: 1; }
-      100% { transform: translate(var(--cx), 108vh) rotate(var(--cr)) scale(var(--cs)); opacity: 0; }
+      0%   { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translate(var(--cx), 110vh) rotate(var(--cr)) scale(var(--cs)); opacity: 0; }
     }
   `;
   document.head.appendChild(s);
@@ -43,38 +85,38 @@ export function launchConfetti(colId) {
   document.body.appendChild(wrap);
 
   for (let i = 0; i < cfg.count; i++) {
-    const el = document.createElement('div');
-    const x    = (Math.random() * 100).toFixed(1);
-    const del  = (Math.random() * 0.7).toFixed(2);
-    const dur  = (2.0 + Math.random() * 1.6).toFixed(2);
-    const cx   = ((Math.random() - 0.5) * 200).toFixed(0);
-    const cr   = (Math.random() * 900 - 450).toFixed(0);
-    const cs   = (0.5 + Math.random() * 0.9).toFixed(2);
+    const x   = (Math.random() * 100).toFixed(1);
+    const del = (Math.random() * 0.9).toFixed(2);
+    const dur = (3.2 + Math.random() * 1.8).toFixed(2);   // slower
+    const cx  = ((Math.random() - 0.5) * 180).toFixed(0);
+    const cr  = (Math.random() * 720 - 360).toFixed(0);
+    const cs  = (0.5 + Math.random() * 0.8).toFixed(2);
+
+    let el;
 
     if (cfg.type === 'sparkle') {
       const color = cfg.colors[Math.floor(Math.random() * cfg.colors.length)];
-      const size  = (5 + Math.random() * 10).toFixed(1);
-      const r     = Math.random();
-      // shapes: circle, square, rotated diamond, ✦ sparkle glyph
-      if (r < 0.25) {
-        // ✦ glyph
-        el.textContent = '✦';
-        el.style.cssText = `position:absolute;left:${x}%;top:-20px;font-size:${parseFloat(size)+6}px;color:${color};text-shadow:0 0 8px ${color};line-height:1;animation:confetti-fall ${dur}s ${del}s ease-in forwards;--cx:${cx}px;--cr:${cr}deg;--cs:${cs};`;
-      } else {
-        const br = r < 0.5 ? '50%' : r < 0.75 ? '3px' : '1px';
-        const rot0 = r > 0.75 ? 'rotate(45deg)' : '';
-        el.style.cssText = `position:absolute;left:${x}%;top:-12px;width:${size}px;height:${size}px;background:${color};border-radius:${br};transform-origin:center;box-shadow:0 0 ${parseFloat(size)*1.8}px ${color}99;animation:confetti-fall ${dur}s ${del}s ease-in forwards;--cx:${cx}px;--cr:${cr}deg;--cs:${cs};`;
-        if (rot0) el.style.transform = rot0;
-      }
+      const size  = Math.round(10 + Math.random() * 16);   // bigger so shape reads clearly
+
+      el = document.createElement('div');
+      el.style.cssText = `position:absolute;left:${x}%;top:-${size+4}px;width:${size}px;height:${size}px;`;
+      el.appendChild(makeSparkleSVG(size, color));
     } else {
       const emoji = cfg.emojis[Math.floor(Math.random() * cfg.emojis.length)];
-      const size  = (20 + Math.random() * 20).toFixed(0);
+      const size  = Math.round(22 + Math.random() * 20);
+
+      el = document.createElement('div');
       el.textContent = emoji;
-      el.style.cssText = `position:absolute;left:${x}%;top:-44px;font-size:${size}px;line-height:1;user-select:none;animation:confetti-fall ${dur}s ${del}s ease-in forwards;--cx:${cx}px;--cr:${cr}deg;--cs:${cs};`;
+      el.style.cssText = `position:absolute;left:${x}%;top:-48px;font-size:${size}px;line-height:1;user-select:none;`;
     }
+
+    el.style.animation = `confetti-fall ${dur}s ${del}s ease-in forwards`;
+    el.style.setProperty('--cx', `${cx}px`);
+    el.style.setProperty('--cr', `${cr}deg`);
+    el.style.setProperty('--cs', cs);
 
     wrap.appendChild(el);
   }
 
-  setTimeout(() => wrap.remove(), 5000);
+  setTimeout(() => wrap.remove(), 6500);
 }
